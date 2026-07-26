@@ -72,12 +72,9 @@
           "defaultConfiguration": "development"
         },
         "test": {
-          "builder": "@angular/build:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
-            "tsConfig": "tsconfig.spec.json",
-            "codeCoverage": true,
-            "browsers": "ChromeHeadless"
+            "tsConfig": "tsconfig.spec.json"
           }
         },
         "lint": {
