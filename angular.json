@@ -77,7 +77,7 @@
             "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
             "codeCoverage": true,
-            "browsers": ["ChromeHeadless"]
+            "browsers": "ChromeHeadless"
           }
         },
         "lint": {
