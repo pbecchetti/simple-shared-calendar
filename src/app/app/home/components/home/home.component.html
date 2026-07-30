@@ -1,0 +1,29 @@
+<h1 class="mb-3 text-3xl font-bold tracking-tight text-heading md:text-4xl lg:text-5xl text-center">
+  Bienvenue dans votre calendrier partagé
+</h1>
+
+<div class="header">
+  <button (click)="prevMonth()">←</button>
+  <h2>{{ monthLabel() }}</h2>
+  <button (click)="nextMonth()">→</button>
+</div>
+
+<div class="calendar">
+  <div class="weekdays">
+    <div class="weekday">Lun</div>
+    <div class="weekday">Mar</div>
+    <div class="weekday">Mer</div>
+    <div class="weekday">Jeu</div>
+    <div class="weekday">Ven</div>
+    <div class="weekday">Sam</div>
+    <div class="weekday">Dim</div>
+  </div>
+
+  <div class="grid">
+    @for (day of daysInGrid(); track day.dateStr) {
+      <div class="cell" [class.other-month]="!day.isCurrentMonth">
+        <span class="day-number">{{ day.dayNumber }}</span>
+      </div>
+    }
+  </div>
+</div>
