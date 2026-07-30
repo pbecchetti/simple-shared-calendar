@@ -5,7 +5,6 @@ const tseslint = require('typescript-eslint');
 const angular = require('angular-eslint');
 const eslintConfigPrettier = require('eslint-config-prettier');
 
-
 module.exports = defineConfig([
   {
     files: ['**/*.ts'],
@@ -33,6 +32,7 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
+      '@angular-eslint/no-empty-lifecycle-method': 'off',
     },
   },
   {
@@ -40,5 +40,5 @@ module.exports = defineConfig([
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {},
   },
-  eslintConfigPrettier
+  eslintConfigPrettier,
 ]);
