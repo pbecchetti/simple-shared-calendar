@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, signal } from '@angular/core';
 import {
   startOfMonth,
   endOfMonth,
@@ -20,13 +20,9 @@ import { fr } from 'date-fns/locale';
   styleUrl: './home.component.css',
   standalone: true,
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent {
   currentMonth = signal(new Date());
   monthLabel = computed(() => format(this.currentMonth(), 'MMMM yyyy', { locale: fr }));
-
-  public constructor() {}
-
-  ngOnInit(): void {}
 
   daysInGrid = computed(() => {
     const monthStart = startOfMonth(this.currentMonth());

@@ -32,10 +32,7 @@ module.exports = defineConfig([
           style: 'kebab-case',
         },
       ],
-      rules: {
-        // @ts-ignore
-        '@angular-eslint/no-empty-lifecycle-method': 'off',
-      },
+      '@angular-eslint/no-empty-lifecycle-method': 'off',
     },
   },
   {
