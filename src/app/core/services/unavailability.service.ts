@@ -1,5 +1,14 @@
 import { Injectable } from '@angular/core';
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import { firestore } from '../firebase';
 
 @Injectable({
