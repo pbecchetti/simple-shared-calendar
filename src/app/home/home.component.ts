@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import {
   startOfMonth,
   endOfMonth,
@@ -12,6 +12,7 @@ import {
   isToday,
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
+import { UnavailabilityService } from '../../../../core/services/unavailability.service';
 
 @Component({
   selector: 'app-home',
@@ -21,8 +22,15 @@ import { fr } from 'date-fns/locale';
   standalone: true,
 })
 export class HomeComponent {
+  private unavailabilityService = inject(UnavailabilityService);
+
   currentMonth = signal(new Date());
   monthLabel = computed(() => format(this.currentMonth(), 'MMMM yyyy', { locale: fr }));
+
+  public userTest = {
+    name: 'Pauline',
+    id: 'Nr7OzX9iTngbjEePs0Xm',
+  };
 
   daysInGrid = computed(() => {
     const monthStart = startOfMonth(this.currentMonth());
@@ -53,8 +61,9 @@ export class HomeComponent {
     this.currentMonth.update((d) => addMonths(d, 1));
   }
 
-  onDayClick(dateStr: string) {
-    console.log('Clicked', dateStr);
-    // Ici tu appelleras unavailabilityService.toggle(user, dateStr)
+  async onDayClick(dateStr: string) {
+    await this.unavailabilityService.toggle(this.userTest.id, dateStr);
+    const unavailableUserIds = await this.unavailabilityService.getUnavailableUserIds(dateStr);
+    console.log('Unavailable users for', dateStr, unavailableUserIds);
   }
 }

@@ -21,7 +21,15 @@
 
   <div class="grid">
     @for (day of daysInGrid(); track day.dateStr) {
-      <div class="cell" [class.other-month]="!day.isCurrentMonth">
+      <div
+        class="cell"
+        [class.other-month]="!day.isCurrentMonth"
+        role="button"
+        tabindex="0"
+        (click)="onDayClick(day.dateStr)"
+        (keydown.enter)="onDayClick(day.dateStr)"
+        (keydown.space)="$event.preventDefault(); onDayClick(day.dateStr)"
+      >
         <span class="day-number">{{ day.dayNumber }}</span>
       </div>
     }
