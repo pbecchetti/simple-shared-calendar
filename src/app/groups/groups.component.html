@@ -22,6 +22,10 @@
 
   <h2>Créer un groupe</h2>
   <input [(ngModel)]="newGroupName" placeholder="Nom du groupe" />
+  <label>
+    Nombre minimum de personnes indisponibles pour bloquer un jour
+    <input type="number" min="1" [(ngModel)]="newGroupUnavailabilityThreshold" />
+  </label>
   <button (click)="createGroup()">Créer</button>
 
   <h2>Rejoindre un groupe</h2>
