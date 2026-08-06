@@ -1,1 +1,4 @@
-<app-home></app-home>
+<router-outlet></router-outlet>
+@if (currentUser()) {
+  <button (click)="logout()">Se déconnecter</button>
+}

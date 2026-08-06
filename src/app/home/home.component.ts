@@ -1,4 +1,6 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, computed, inject, input, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { Auth, user } from '@angular/fire/auth';
 import {
   startOfMonth,
   endOfMonth,
@@ -12,7 +14,7 @@ import {
   isToday,
 } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { UnavailabilityService } from '../../../../core/services/unavailability.service';
+import { UnavailabilityService } from '../core/services/unavailability.service';
 
 @Component({
   selector: 'app-home',
@@ -22,15 +24,14 @@ import { UnavailabilityService } from '../../../../core/services/unavailability.
   standalone: true,
 })
 export class HomeComponent {
+  groupId = input.required<string>();
+
+  private auth = inject(Auth);
   private unavailabilityService = inject(UnavailabilityService);
+  private currentUser = toSignal(user(this.auth), { initialValue: undefined });
 
   currentMonth = signal(new Date());
   monthLabel = computed(() => format(this.currentMonth(), 'MMMM yyyy', { locale: fr }));
-
-  public userTest = {
-    name: 'Pauline',
-    id: 'Nr7OzX9iTngbjEePs0Xm',
-  };
 
   daysInGrid = computed(() => {
     const monthStart = startOfMonth(this.currentMonth());
@@ -62,8 +63,15 @@ export class HomeComponent {
   }
 
   async onDayClick(dateStr: string) {
-    await this.unavailabilityService.toggle(this.userTest.id, dateStr);
-    const unavailableUserIds = await this.unavailabilityService.getUnavailableUserIds(dateStr);
+    const uid = this.currentUser()?.uid;
+    if (!uid) {
+      return;
+    }
+    await this.unavailabilityService.toggle(this.groupId(), uid, dateStr);
+    const unavailableUserIds = await this.unavailabilityService.getUnavailableUserIds(
+      this.groupId(),
+      dateStr,
+    );
     console.log('Unavailable users for', dateStr, unavailableUserIds);
   }
 }

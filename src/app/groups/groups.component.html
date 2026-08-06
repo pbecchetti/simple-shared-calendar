@@ -1,0 +1,33 @@
+@if (!currentUser()) {
+  <p>Vous devez être connecté. <a routerLink="/signin">Se connecter</a></p>
+} @else {
+  <h1>Vos groupes</h1>
+
+  @if (loadError()) {
+    <p class="error">{{ loadError() }}</p>
+  }
+
+  @if (groups().length === 0) {
+    <p>Vous n'appartenez à aucun groupe pour l'instant.</p>
+  }
+
+  <ul>
+    @for (group of groups(); track group.id) {
+      <li>
+        <a [routerLink]="['/group', group.id]">{{ group.name }}</a>
+        — code d'invitation : <strong>{{ group.joinCode }}</strong>
+      </li>
+    }
+  </ul>
+
+  <h2>Créer un groupe</h2>
+  <input [(ngModel)]="newGroupName" placeholder="Nom du groupe" />
+  <button (click)="createGroup()">Créer</button>
+
+  <h2>Rejoindre un groupe</h2>
+  <input [(ngModel)]="joinCode" placeholder="Code d'invitation" />
+  <button (click)="joinGroup()">Rejoindre</button>
+  @if (joinError) {
+    <p class="error">{{ joinError }}</p>
+  }
+}

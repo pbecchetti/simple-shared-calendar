@@ -1,0 +1,9 @@
+@if (currentUser(); as user) {
+  <p>Connecté en tant que {{ user.displayName }}</p>
+  <button (click)="logout()">Se déconnecter</button>
+} @else {
+  <button (click)="login()">Se connecter avec Google</button>
+  @if (loginError) {
+    <p class="error">{{ loginError }}</p>
+  }
+}
