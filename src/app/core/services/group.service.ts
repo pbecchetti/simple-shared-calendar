@@ -14,6 +14,7 @@ import { firestore } from '../firebase';
 export interface Group {
   id: string;
   name: string;
+  joinCode: string;
 }
 
 function generateJoinCode(): string {
@@ -63,7 +64,11 @@ export class GroupService {
     return Promise.all(
       groupIds.map(async (id) => {
         const snap = await getDoc(doc(firestore, 'groups', id));
-        return { id, name: (snap.data()?.['name'] as string) ?? id };
+        return {
+          id,
+          name: (snap.data()?.['name'] as string) ?? id,
+          joinCode: (snap.data()?.['joinCode'] as string) ?? '',
+        };
       }),
     );
   }
