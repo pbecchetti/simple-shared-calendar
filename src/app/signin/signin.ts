@@ -1,11 +1,11 @@
-import { Component, inject } from '@angular/core';
-import { AsyncPipe } from '@angular/common';
+import { Component, effect, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { Auth, GoogleAuthProvider, signInWithPopup, signOut, user } from '@angular/fire/auth';
 
 @Component({
   selector: 'app-signin',
-  imports: [AsyncPipe],
+  imports: [],
   templateUrl: './signin.html',
   styleUrl: './signin.css',
 })
@@ -13,11 +13,23 @@ export class Signin {
   private auth: Auth = inject(Auth);
   private router = inject(Router);
   private provider = new GoogleAuthProvider();
-  user$ = user(this.auth);
+
+  currentUser = toSignal(user(this.auth), { initialValue: undefined });
+  loginError = '';
+
+  constructor() {
+    effect(() => {
+      if (this.currentUser()) {
+        void this.router.navigateByUrl('/');
+      }
+    });
+  }
 
   login() {
-    signInWithPopup(this.auth, this.provider).then(() => {
-      void this.router.navigateByUrl('/');
+    this.loginError = '';
+    signInWithPopup(this.auth, this.provider).catch((error: unknown) => {
+      console.error('sign in error', error);
+      this.loginError = 'Erreur de connexion, réessaie.';
     });
   }
 

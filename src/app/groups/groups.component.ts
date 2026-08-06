@@ -22,12 +22,15 @@ export class GroupsComponent {
   newGroupName = '';
   joinCode = '';
   joinError = '';
+  loadError = signal('');
 
   constructor() {
     effect(() => {
       const currentUser = this.currentUser();
       if (currentUser) {
-        void this.userService.ensureUserDoc(currentUser.uid, currentUser.displayName ?? '');
+        this.userService
+          .ensureUserDoc(currentUser.uid, currentUser.displayName ?? '')
+          .catch((error: unknown) => console.error('ensureUserDoc failed', error));
         void this.loadGroups(currentUser.uid);
       }
     });
@@ -59,6 +62,12 @@ export class GroupsComponent {
   }
 
   private async loadGroups(userId: string): Promise<void> {
-    this.groups.set(await this.groupService.getUserGroups(userId));
+    try {
+      this.loadError.set('');
+      this.groups.set(await this.groupService.getUserGroups(userId));
+    } catch (error) {
+      console.error('loadGroups failed', error);
+      this.loadError.set(`Impossible de charger vos groupes : ${(error as Error).message}`);
+    }
   }
 }

@@ -3,6 +3,10 @@
 } @else {
   <h1>Vos groupes</h1>
 
+  @if (loadError()) {
+    <p class="error">{{ loadError() }}</p>
+  }
+
   @if (groups().length === 0) {
     <p>Vous n'appartenez à aucun groupe pour l'instant.</p>
   }

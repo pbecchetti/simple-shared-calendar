@@ -3,8 +3,8 @@ import {
   arrayUnion,
   collection,
   doc,
-  getDoc,
-  getDocs,
+  getDocFromServer,
+  getDocsFromServer,
   query,
   where,
   writeBatch,
@@ -40,7 +40,7 @@ export class GroupService {
 
   async joinGroup(joinCode: string, userId: string): Promise<string> {
     const q = query(collection(firestore, 'groups'), where('joinCode', '==', joinCode));
-    const snapshot = await getDocs(q);
+    const snapshot = await getDocsFromServer(q);
     const groupDoc = snapshot.docs[0];
     if (!groupDoc) {
       throw new Error('Code invalide');
@@ -58,12 +58,12 @@ export class GroupService {
   }
 
   async getUserGroups(userId: string): Promise<Group[]> {
-    const userSnap = await getDoc(doc(firestore, 'users', userId));
+    const userSnap = await getDocFromServer(doc(firestore, 'users', userId));
     const groupIds = (userSnap.data()?.['groupIds'] as string[]) ?? [];
 
     return Promise.all(
       groupIds.map(async (id) => {
-        const snap = await getDoc(doc(firestore, 'groups', id));
+        const snap = await getDocFromServer(doc(firestore, 'groups', id));
         return {
           id,
           name: (snap.data()?.['name'] as string) ?? id,
