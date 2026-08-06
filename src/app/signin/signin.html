@@ -1,1 +1,6 @@
-<p>signin works!</p>
+@if (user$ | async; as currentUser) {
+  <p>Connecté en tant que {{ currentUser.displayName }}</p>
+  <button (click)="logout()">Se déconnecter</button>
+} @else {
+  <button (click)="login()">Se connecter avec Google</button>
+}
