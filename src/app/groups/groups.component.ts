@@ -19,6 +19,7 @@ export class GroupsComponent {
 
   currentUser = toSignal(user(this.auth), { initialValue: undefined });
   groups = signal<Group[]>([]);
+  loading = signal(false);
   newGroupName = '';
   newGroupUnavailabilityThreshold = 1;
   joinCode = '';
@@ -29,12 +30,19 @@ export class GroupsComponent {
     effect(() => {
       const currentUser = this.currentUser();
       if (currentUser) {
-        this.userService
-          .ensureUserDoc(currentUser.uid, currentUser.displayName ?? '')
-          .catch((error: unknown) => console.error('ensureUserDoc failed', error));
-        void this.loadGroups(currentUser.uid);
+        void this.initUser(currentUser.uid, currentUser.displayName ?? '', currentUser.email ?? '');
       }
     });
+  }
+
+  private async initUser(userId: string, name: string, email: string): Promise<void> {
+    this.loading.set(true);
+    try {
+      await this.userService.ensureUserDoc(userId, name, email);
+    } catch (error) {
+      console.error('ensureUserDoc failed', error);
+    }
+    await this.loadGroups(userId);
   }
 
   async createGroup(): Promise<void> {
@@ -74,6 +82,8 @@ export class GroupsComponent {
     } catch (error) {
       console.error('loadGroups failed', error);
       this.loadError.set(`Impossible de charger vos groupes : ${(error as Error).message}`);
+    } finally {
+      this.loading.set(false);
     }
   }
 }
