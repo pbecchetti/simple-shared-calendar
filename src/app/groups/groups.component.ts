@@ -29,7 +29,7 @@ export class GroupsComponent {
       const currentUser = this.currentUser();
       if (currentUser) {
         this.userService
-          .ensureUserDoc(currentUser.uid, currentUser.displayName ?? '')
+          .ensureUserDoc(currentUser.uid, currentUser.displayName ?? '', currentUser.email ?? '')
           .catch((error: unknown) => console.error('ensureUserDoc failed', error));
         void this.loadGroups(currentUser.uid);
       }

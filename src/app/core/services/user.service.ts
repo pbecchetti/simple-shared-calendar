@@ -6,7 +6,7 @@ import { firestore } from '../firebase';
   providedIn: 'root',
 })
 export class UserService {
-  async ensureUserDoc(userId: string, name: string): Promise<void> {
-    await setDoc(doc(firestore, 'users', userId), { name }, { merge: true });
+  async ensureUserDoc(userId: string, name: string, email: string): Promise<void> {
+    await setDoc(doc(firestore, 'users', userId), { name, email }, { merge: true });
   }
 }
