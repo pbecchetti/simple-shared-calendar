@@ -6,7 +6,10 @@
       "Bash(curl -s -m 10 http://localhost:4210/)",
       "Bash(kill %1 %2)",
       "Bash(pkill -f \"ng serve --port 4210\")",
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(npm update *)",
+      "Bash(rm -rf node_modules package-lock.json)",
+      "Bash(npm install *)"
     ]
   }
 }
