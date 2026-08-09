@@ -7,7 +7,9 @@
     <p class="error">{{ loadError() }}</p>
   }
 
-  @if (groups().length === 0) {
+  @if (loading()) {
+    <p>Chargement de vos groupes...</p>
+  } @else if (groups().length === 0) {
     <p>Vous n'appartenez à aucun groupe pour l'instant.</p>
   }
 
