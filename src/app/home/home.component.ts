@@ -1,5 +1,6 @@
-import { Component, computed, inject, input, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { RouterLink } from '@angular/router';
 import { Auth, user } from '@angular/fire/auth';
 import {
   startOfMonth,
@@ -18,7 +19,7 @@ import { UnavailabilityService } from '../core/services/unavailability.service';
 
 @Component({
   selector: 'app-home',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css',
   standalone: true,
@@ -33,21 +34,39 @@ export class HomeComponent {
   currentMonth = signal(new Date());
   monthLabel = computed(() => format(this.currentMonth(), 'MMMM yyyy', { locale: fr }));
 
+  private unavailableDates = signal<Set<string>>(new Set());
+
+  constructor() {
+    effect(() => {
+      const uid = this.currentUser()?.uid;
+      const groupId = this.groupId();
+      if (!uid) {
+        return;
+      }
+      this.unavailabilityService
+        .getUnavailableDatesForUser(groupId, uid)
+        .then((dates) => this.unavailableDates.set(new Set(dates)));
+    });
+  }
+
   daysInGrid = computed(() => {
     const monthStart = startOfMonth(this.currentMonth());
     const monthEnd = endOfMonth(this.currentMonth());
     const gridStart = startOfWeek(monthStart, { weekStartsOn: 1 }); // recule jusqu'au lundi
     const gridEnd = endOfWeek(monthEnd, { weekStartsOn: 1 }); // avance jusqu'au dimanche
+    const unavailableDates = this.unavailableDates();
 
     const days = [];
     let day = gridStart;
     while (day <= gridEnd) {
+      const dateStr = format(day, 'yyyy-MM-dd');
       days.push({
         date: day,
-        dateStr: format(day, 'yyyy-MM-dd'),
+        dateStr,
         dayNumber: format(day, 'd'),
         isCurrentMonth: isSameMonth(day, this.currentMonth()),
         isToday: isToday(day),
+        isUnavailable: unavailableDates.has(dateStr),
       });
       day = addDays(day, 1);
     }
@@ -68,10 +87,14 @@ export class HomeComponent {
       return;
     }
     await this.unavailabilityService.toggle(this.groupId(), uid, dateStr);
-    const unavailableUserIds = await this.unavailabilityService.getUnavailableUserIds(
-      this.groupId(),
-      dateStr,
-    );
-    console.log('Unavailable users for', dateStr, unavailableUserIds);
+    this.unavailableDates.update((dates) => {
+      const next = new Set(dates);
+      if (next.has(dateStr)) {
+        next.delete(dateStr);
+      } else {
+        next.add(dateStr);
+      }
+      return next;
+    });
   }
 }

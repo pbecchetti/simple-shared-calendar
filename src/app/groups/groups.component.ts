@@ -21,6 +21,7 @@ export class GroupsComponent {
   groups = signal<Group[]>([]);
   loading = signal(false);
   newGroupName = '';
+  newGroupUnavailabilityThreshold = 1;
   joinCode = '';
   joinError = '';
   loadError = signal('');
@@ -46,11 +47,16 @@ export class GroupsComponent {
 
   async createGroup(): Promise<void> {
     const currentUser = this.currentUser();
-    if (!currentUser || !this.newGroupName.trim()) {
+    if (!currentUser || !this.newGroupName.trim() || this.newGroupUnavailabilityThreshold < 1) {
       return;
     }
-    await this.groupService.createGroup(this.newGroupName.trim(), currentUser.uid);
+    await this.groupService.createGroup(
+      this.newGroupName.trim(),
+      currentUser.uid,
+      this.newGroupUnavailabilityThreshold,
+    );
     this.newGroupName = '';
+    this.newGroupUnavailabilityThreshold = 1;
     await this.loadGroups(currentUser.uid);
   }
 

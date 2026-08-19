@@ -15,6 +15,7 @@ export interface Group {
   id: string;
   name: string;
   joinCode: string;
+  unavailabilityThreshold: number;
 }
 
 function generateJoinCode(): string {
@@ -25,10 +26,19 @@ function generateJoinCode(): string {
   providedIn: 'root',
 })
 export class GroupService {
-  async createGroup(name: string, userId: string): Promise<string> {
+  async createGroup(
+    name: string,
+    userId: string,
+    unavailabilityThreshold: number,
+  ): Promise<string> {
     const groupRef = doc(collection(firestore, 'groups'));
     const batch = writeBatch(firestore);
-    batch.set(groupRef, { name, memberIds: [userId], joinCode: generateJoinCode() });
+    batch.set(groupRef, {
+      name,
+      memberIds: [userId],
+      joinCode: generateJoinCode(),
+      unavailabilityThreshold,
+    });
     batch.set(
       doc(firestore, 'users', userId),
       { groupIds: arrayUnion(groupRef.id) },
@@ -68,6 +78,7 @@ export class GroupService {
           id,
           name: (snap.data()?.['name'] as string) ?? id,
           joinCode: (snap.data()?.['joinCode'] as string) ?? '',
+          unavailabilityThreshold: (snap.data()?.['unavailabilityThreshold'] as number) ?? 1,
         };
       }),
     );
