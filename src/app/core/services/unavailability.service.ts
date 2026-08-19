@@ -33,4 +33,13 @@ export class UnavailabilityService {
     const snapshot = await getDocs(q);
     return snapshot.docs.map((d) => d.data()['userId'] as string);
   }
+
+  async getUnavailableDatesForUser(groupId: string, userId: string): Promise<string[]> {
+    const q = query(
+      collection(firestore, 'groups', groupId, 'unavailabilities'),
+      where('userId', '==', userId),
+    );
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((d) => d.data()['dateStr'] as string);
+  }
 }
